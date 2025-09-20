@@ -1,0 +1,75 @@
+{% extends 'base.html' %} 
+{% load widget_tweaks %}
+
+{% block head_title %}
+    - Update Articles
+{% endblock head_title %}
+
+{% block base_content %}
+<main class="max-w-7xl mx-auto mt-10 p-2 md:p-4 lg:p-10">
+    
+    <form action="" method="POST" x-data="
+        { articleStatus: '' }
+    ">
+        {% csrf_token %}
+
+        <div class="mb-4">
+            {% render_field form.title class="text-4xl w-full rounded-md border-2 border-gray-200 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 p-2" placeholder="Write a title for your article" %}
+        </div>
+
+        <div class="flex items-center gap-10 mb-10 mt-3">
+            {% render_field form.status class="border-none text-xs border-gray-200 rounded-sm uppercase p-3" x-bind::class="`article-status-${articleStatus}`" x-model.fill="articleStatus" %}
+            <p class="text-center">{{ articles.word_count }} word{{ articles.word_count | pluralize }}</p>
+            <p>Last edited on <span class="font-bold">{{ articles.updated_at | date:"jS F Y" }}</span></p>
+        </div>
+    
+        <div class="mb-10">
+            {% render_field form.content rows=20 %}
+        </div>
+    
+        <div class="mb-5">
+            <p class="text-xl font-semibold mb-2">{{ form.twitter_post.label }}</p>
+            {% render_field form.twitter_post rows=10 class="w-full" %}
+        </div>
+
+        <div class="flex justify-end gap-4">
+            <a hx-get="{% url 'delete_article' articles.id %}" class="button danger cursor-pointer" hx-target="#dialog" hx-select="main">Delete article</a>
+            <button type="submit" class="button primary cursor-pointer">Save</button>
+        </div>
+
+    </form>
+
+    {% block extra_body %}
+        <div id="modal" class="relative z-10 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="bg-black/15 fixed inset-0"></div>
+            <div class="fixed inset-0 z-10 w-screen p-4">
+                <div id="dialog" class="max-w-lg mx-auto bg-white p-16 rounded-md shadow-lg">
+                    <!-- the dialog will be loaded here -->
+                </div>
+            </div>
+        </div>
+    {% endblock extra_body %}
+        
+</main>
+{% endblock base_content %}
+
+{% block page_js %} 
+    <script type="application/javascript">
+        // dublication of js code
+        // go to video 171 if you need to avoid
+        const contentMarkdown = new EasyMDE({
+            element: document.getElementById("id_content"),
+            forceSync: true,
+        });
+        const modal = document.getElementById('modal');
+        htmx.on('htmx:afterSwap', function(e) {
+            // is this event for us?
+            if (e.detail.target.id == "dialog") {
+                // show the modal
+                modal.classList.toggle('hidden');
+            }
+        });
+    </script>
+{% endblock page_js %}
+
+
