@@ -3,10 +3,10 @@
 poetry run python manage.py collectstatic --noinput
 poetry run python manage.py migrate
 
-if [[ "$ENV_STATE" == "production" ]]; then
+if [[ "$RAILWAY_ENVIRONMENT" == "production" ]]; then
     echo "Starting with Gunicorn..."
-    poetry run gunicorn djangocourse.wsgi --workers 4 --bind 0.0.0.0:8000 --forwarded-allow-ips "*"
+    exec poetry run gunicorn djangocourse.wsgi:application --workers 4 --bind 0.0.0.0:$PORT --forwarded-allow-ips="*"
 else
     echo "Starting with Django runserver..."
-    poetry run python manage.py runserver 0.0.0.0:8000
+    exec poetry run python manage.py runserver 0.0.0.0:8000
 fi
