@@ -19,6 +19,9 @@ RUN poetry install --no-root
 # 7. Copy the rest of your code
 COPY . .
 
+# Make sure entrypoint script is executable
+RUN chmod +x /code/start-django.sh
+
 # 8. Expose Django’s port
 EXPOSE 8000
 
