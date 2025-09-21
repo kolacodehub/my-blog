@@ -32,9 +32,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-import os
+
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+
+# Railway injects your service domain into the environment variable RAILWAY_STATIC_URL sometimes
+RAILWAY_URL = os.getenv("RAILWAY_STATIC_URL", "")
+
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+
+if RAILWAY_URL:
+    ALLOWED_HOSTS.append(RAILWAY_URL.replace("https://", ""))
+
 
 
 AUTHENTICATION_BACKENDS = [
